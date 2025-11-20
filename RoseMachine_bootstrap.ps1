@@ -87,7 +87,7 @@ function Run-Git {
 
 $repos = @(
     @{
-        Name   = "rose-ledger-foundation"
+        Name   = "ledger-foundation"
         Url    = "https://github.com/falsumAI/rose-ledger-foundation.git"
         Role   = "ConstitutionAndSpecs"
         Branch = "main"
@@ -147,8 +147,10 @@ foreach ($repo in $repos) {
     } catch {
         Log ("Branch {0} missing for {1}, creating from origin." -f $branch, $name) "WARN"
         Run-Git -RepoPath $path -Arguments @("checkout", "-b", $branch, "origin/$branch")
+    }
 
     Run-Git -RepoPath $path -Arguments @("pull", "origin", $branch)
+
     $commit    = (Run-Git -RepoPath $path -Arguments @("rev-parse", "HEAD")).Trim()
     $curBranch = (Run-Git -RepoPath $path -Arguments @("rev-parse", "--abbrev-ref", "HEAD")).Trim()
     $remoteUrl = (Run-Git -RepoPath $path -Arguments @("config", "--get", "remote.origin.url")).Trim()
@@ -160,6 +162,7 @@ foreach ($repo in $repos) {
             $destName = "{0}__{1}" -f $name, $_.Name
             $destPath = Join-Path $licensesRoot $destName
             Copy-Item -Path $_.FullName -Destination $destPath -Force
+            Log ("License captured: {0}" -f $destName)
         }
 
     Get-ChildItem -Path $path -Recurse -File -Include "*.pdf" |
@@ -179,6 +182,7 @@ foreach ($repo in $repos) {
     }
 }
 
+$scriptPath = $MyInvocation.MyCommand.Path
 if ($scriptPath -and (Test-Path $scriptPath)) {
     $scriptHash = (Get-FileHash -Algorithm SHA256 -Path $scriptPath).Hash
 } else {
@@ -196,6 +200,7 @@ $sysInfo = [PSCustomObject]@{
 
 function Get-FileHashes {
     param([string] $Directory)
+    $hashes = @{}
     if (Test-Path $Directory) {
         Get-ChildItem -Path $Directory -File -Recurse | ForEach-Object {
             try {
@@ -255,6 +260,7 @@ $receiptFileName = ("RoseReceipt_{0}.json" -f $timestampUtc)
 $receiptPath     = Join-Path $rcptRoot $receiptFileName
 
 $receipt | ConvertTo-Json -Depth 8 | Out-File -FilePath $receiptPath -Encoding UTF8
+Log ("Receipt written: {0}" -f $receiptPath)
 
 try {
     $desktop = [Environment]::GetFolderPath("Desktop")
@@ -283,9 +289,3 @@ Write-Host "RoseMachine bootstrap complete." -ForegroundColor Cyan
 Write-Host ("Workspace root : {0}" -f $root)
 Write-Host ("Receipt        : {0}" -f $receiptPath)
 Write-Host ("Bundle         : {0}" -f $bundlePath)
-Log ("Receipt written: {0}" -f $receiptPath)
-    $hashes = @{}
-$scriptPath = $MyInvocation.MyCommand.Path
-            Log ("License captured: {0}" -f $destName)
-
-
