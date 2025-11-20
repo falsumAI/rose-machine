@@ -1,0 +1,21 @@
+# Ignore Windows junk
+Thumbs.db
+Desktop.ini
+
+# Ignore PowerShell history files
+*.ps1.tmp
+
+# Ignore RoseMachine outputs
+logs/
+receipts/
+bundles/
+docs/
+licenses/
+
+# Ignore VSCode settings
+.vscode/
+
+# Ignore temporary files
+*.tmp
+*.log
+*.bak
