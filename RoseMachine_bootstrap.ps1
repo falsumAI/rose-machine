@@ -90,7 +90,7 @@ $repos = @(
         Name   = "ledger-foundation"
         Url    = "https://github.com/falsumAI/rose-ledger-foundation.git"
         Role   = "ConstitutionAndSpecs"
-        Branch = "main"
+        Branch = "master"
     },
     @{
         Name   = "rose-coherence-benchmark"
